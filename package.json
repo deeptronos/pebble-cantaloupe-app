@@ -1,0 +1,24 @@
+{
+    "author": "ecnemec1132@gmail.com",
+    "dependencies": {},
+    "keywords": [],
+    "name": "cantaloupe-notecard-example",
+    "pebble": {
+        "capabilities": [
+            ""
+        ],
+        "displayName": "Cantaloupe Notecard Example",
+        "enableMultiJS": true,
+        "messageKeys": [],
+        "projectType": "native",
+        "resources": {
+            "media": []
+        },
+        "sdkVersion": "3",
+        "uuid": "7ba34249-834a-4c7b-adfe-e4daf25a2d9c",
+        "watchapp": {
+            "watchface": false
+        }
+    },
+    "version": "1.0.0"
+}
