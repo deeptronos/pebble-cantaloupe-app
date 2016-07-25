@@ -1,4 +1,5 @@
 #include <pebble.h>
+#include "splash_window.h"
 #include "notecardTemplate.h"
 
 //Pointer to window
@@ -8,9 +9,14 @@ static TextLayer *cardTitle;
 //Card body pointer
 static TextLayer *cardBody;
 //Char buffer for title input
-static char titleInputBuffer[45];
+static char titleInputBuffer[100];
+//Make title key for persistance
+uint32_t titleKey = 0;
 //Char buffer for body input
 static char bodyInputBuffer[1200];
+//Make body key for persistance
+uint32_t bodyKey = 1;
+
 
 bool isUp = false;
 bool isDown = false;
@@ -22,6 +28,20 @@ DictationSession *dictation_session;
 
 void window_load(Window *notecardWindow){
   
+  //Check if anything is previously stored in keys
+  if (persist_exists(titleKey)) {
+  // Read persisted value
+    persist_read_string(titleKey, titleInputBuffer, sizeof(titleInputBuffer));
+
+}
+  //Check if anything is previously stored in keys
+  if (persist_exists(bodyKey)) {
+  // Read persisted value
+    persist_read_string(bodyKey, bodyInputBuffer, sizeof(bodyInputBuffer));
+
+}
+  
+  //Make GRect bounds based on bounds of window
   GRect bounds = layer_get_bounds(window_get_root_layer(notecardWindow));
   
   //Make title layer
@@ -35,6 +55,7 @@ void window_load(Window *notecardWindow){
   //Fonts
  
   //Add to window
+  text_layer_set_text(cardTitle, titleInputBuffer);
   layer_add_child(window_get_root_layer(notecardWindow), text_layer_get_layer(cardTitle));
      
   //Make body layer
@@ -45,6 +66,7 @@ void window_load(Window *notecardWindow){
   text_layer_set_text_color(cardBody, GColorBlack);
  
   //Add to window
+  text_layer_set_text(cardBody, bodyInputBuffer);
   layer_add_child(window_get_root_layer(notecardWindow), text_layer_get_layer(cardBody));
    
   
@@ -87,9 +109,11 @@ void dictation_session_callback(DictationSession *session, DictationSessionStatu
     
     if(isUp == true ){
       snprintf(titleInputBuffer, sizeof(titleInputBuffer),"%s", transcription);
+      persist_write_string( titleKey, titleInputBuffer);
     }
     if(isDown == true ){
       snprintf(bodyInputBuffer, sizeof(bodyInputBuffer),"%s", transcription);
+      persist_write_string(bodyKey, bodyInputBuffer);
     }
     text_layer_set_text(cardTitle, titleInputBuffer);
     text_layer_set_text(cardBody, bodyInputBuffer);
@@ -124,6 +148,9 @@ void click_config_provider(void *context) {
     window_single_click_subscribe(BUTTON_ID_DOWN, down_click_handler);
 }
 int main(){
+  
+  
+  //Create notecard window
   notecardWindow = window_create();
   window_set_click_config_provider(notecardWindow, click_config_provider);
   window_set_window_handlers(notecardWindow, (WindowHandlers){
@@ -132,6 +159,10 @@ int main(){
   });
   
   window_stack_push(notecardWindow, true);
-  
+  //Create splash window
+  splash_window_create();
+  window_stack_push(splash_window_get_window(), true);
   app_event_loop();
+  
+  splash_window_destroy();
 }

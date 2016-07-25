@@ -1,8 +1,8 @@
 {
-    "author": "ecnemec1132@gmail.com",
+    "author": "Inspired By Sticky Notes LLC",
     "dependencies": {},
     "keywords": [],
-    "name": "cantaloupe-notecard-example",
+    "name": "cantaloupe-demo",
     "pebble": {
         "capabilities": [
             ""
@@ -22,6 +22,11 @@
             ]
         },
         "sdkVersion": "3",
+        "targetPlatforms": [
+            "aplite",
+            "basalt",
+            "chalk"
+        ],
         "uuid": "7ba34249-834a-4c7b-adfe-e4daf25a2d9c",
         "watchapp": {
             "watchface": false
