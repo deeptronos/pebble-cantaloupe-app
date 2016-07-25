@@ -12,7 +12,14 @@
         "messageKeys": [],
         "projectType": "native",
         "resources": {
-            "media": []
+            "media": [
+                {
+                    "file": "images/canteloupe_splash.png",
+                    "name": "CANTALOUPE_SPLASH",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                }
+            ]
         },
         "sdkVersion": "3",
         "uuid": "7ba34249-834a-4c7b-adfe-e4daf25a2d9c",
