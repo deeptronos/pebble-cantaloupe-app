@@ -17,7 +17,7 @@ void splash_window_load(Window *window){
   layer_add_child(window_layer, bitmap_layer_get_layer(splashImageLayer));
   
   splashImageTitle = text_layer_create(GRect(0, 120, 144, 34));
-  text_layer_set_text(splashImageTitle, "CANTALOUPE");
+  text_layer_set_text(splashImageTitle, "");
   text_layer_set_text_color(splashImageTitle, GColorRajah);
   text_layer_set_background_color(splashImageTitle, GColorCadetBlue);
   text_layer_set_text_alignment(splashImageTitle, GTextAlignmentCenter);
