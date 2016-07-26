@@ -1,6 +1,7 @@
 #include <pebble.h>
-#include "splash_window.h"
 #include "notecardTemplate.h"
+#include "main_window.h"
+#include "splash_window.h"
 
 //Pointer to window
 Window *notecardWindow;
@@ -9,17 +10,17 @@ static TextLayer *cardTitle;
 //Card body pointer
 static TextLayer *cardBody;
 //Char buffer for title input
-static char titleInputBuffer[100];
+static char titleInputBuffer[45];
 //Make title key for persistance
-uint32_t titleKey = 0;
+uint32_t titleKey1 = 0;
 //Char buffer for body input
 static char bodyInputBuffer[1200];
 //Make body key for persistance
 uint32_t bodyKey = 1;
 
 
-bool isUp = false;
-bool isDown = false;
+bool isUp1 = false;
+bool isDown1 = false;
 
 //Dictation sessions
 DictationSession *dictation_session;
@@ -29,9 +30,9 @@ DictationSession *dictation_session;
 void window_load(Window *notecardWindow){
   
   //Check if anything is previously stored in keys
-  if (persist_exists(titleKey)) {
+  if (persist_exists(titleKey1)) {
   // Read persisted value
-    persist_read_string(titleKey, titleInputBuffer, sizeof(titleInputBuffer));
+    persist_read_string(titleKey1, titleInputBuffer, sizeof(titleInputBuffer));
 
 }
   //Check if anything is previously stored in keys
@@ -41,7 +42,6 @@ void window_load(Window *notecardWindow){
 
 }
   
-  //Make GRect bounds based on bounds of window
   GRect bounds = layer_get_bounds(window_get_root_layer(notecardWindow));
   
   //Make title layer
@@ -55,7 +55,6 @@ void window_load(Window *notecardWindow){
   //Fonts
  
   //Add to window
-  text_layer_set_text(cardTitle, titleInputBuffer);
   layer_add_child(window_get_root_layer(notecardWindow), text_layer_get_layer(cardTitle));
      
   //Make body layer
@@ -66,7 +65,6 @@ void window_load(Window *notecardWindow){
   text_layer_set_text_color(cardBody, GColorBlack);
  
   //Add to window
-  text_layer_set_text(cardBody, bodyInputBuffer);
   layer_add_child(window_get_root_layer(notecardWindow), text_layer_get_layer(cardBody));
    
   
@@ -107,13 +105,13 @@ void dictation_session_callback(DictationSession *session, DictationSessionStatu
   if(status == DictationSessionStatusSuccess){
     //Insert input string into char buffer as an array of chars
     
-    if(isUp == true ){
+    if(isUp1 == true ){
       snprintf(titleInputBuffer, sizeof(titleInputBuffer),"%s", transcription);
-      persist_write_string( titleKey, titleInputBuffer);
+       persist_write_string( titleKey1, titleInputBuffer);
     }
-    if(isDown == true ){
+    if(isDown1 == true ){
       snprintf(bodyInputBuffer, sizeof(bodyInputBuffer),"%s", transcription);
-      persist_write_string(bodyKey, bodyInputBuffer);
+       persist_write_string(bodyKey, bodyInputBuffer);
     }
     text_layer_set_text(cardTitle, titleInputBuffer);
     text_layer_set_text(cardBody, bodyInputBuffer);
@@ -128,14 +126,14 @@ void dictation_session_callback(DictationSession *session, DictationSessionStatu
 void up_click_handler(ClickRecognizerRef recognizer, void *context) {
     dictation_session = dictation_session_create(sizeof(titleInputBuffer), dictation_session_callback, NULL);
     dictation_session_start(dictation_session);
-    isUp = true;
-    isDown = false;
+    isUp1 = true;
+    isDown1 = false;
 }
 void down_click_handler(ClickRecognizerRef recognizer, void *context) {
     dictation_session = dictation_session_create(sizeof(bodyInputBuffer), dictation_session_callback, NULL);
     dictation_session_start(dictation_session);
-    isDown = true;
-    isUp = false;
+    isDown1 = true;
+    isUp1 = false;
   
 }
 
@@ -147,11 +145,14 @@ void click_config_provider(void *context) {
     window_single_click_subscribe(BUTTON_ID_UP, up_click_handler);
     window_single_click_subscribe(BUTTON_ID_DOWN, down_click_handler);
 }
+
+void launch_main_window(void *data){
+	window_stack_push(main_window_get_window(), true);
+}
+
 int main(){
-  
-  
-  //Create notecard window
   notecardWindow = window_create();
+  main_window_create();
   window_set_click_config_provider(notecardWindow, click_config_provider);
   window_set_window_handlers(notecardWindow, (WindowHandlers){
     .load = window_load,
@@ -159,10 +160,14 @@ int main(){
   });
   
   window_stack_push(notecardWindow, true);
-  //Create splash window
+	
+   //Create splash window
   splash_window_create();
   window_stack_push(splash_window_get_window(), true);
-  app_event_loop();
   
+  app_timer_register(500, launch_main_window, NULL);
+  
+  app_event_loop();
+   
   splash_window_destroy();
 }
