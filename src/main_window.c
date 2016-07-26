@@ -29,7 +29,7 @@ int16_t menu_get_header_height_callback(MenuLayer *menu_layer, uint16_t section_
 void menu_draw_header_callback(GContext* ctx, const Layer *cell_layer, uint16_t section_index, void *data) {
     switch(section_index){
 		case 0:
-			menu_cell_basic_header_draw(ctx, cell_layer, "Cantelope");
+			menu_cell_basic_header_draw(ctx, cell_layer, "Canteloupe");
 			break;
 	}
 }
